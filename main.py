@@ -6,8 +6,13 @@ from routes.set.deshabilitar_usuario import router as deshabilitar_usuario_route
 from routes.set.habilitar_usuario import router as habilitar_usuario_router
 from routes.delete.eliminar_usuario import router as eliminar_usuario_router
 from routes.create.crear_usuario import router as crear_usuario_router
+from routes.auth.login import router as login_router
 
-app = FastAPI()
+from dotenv import load_dotenv
+
+load_dotenv()
+
+app = FastAPI(title="API mortadela", version="1.0.0")
 
 origins = [
     "http://localhost:3000",  # o la URL de tu frontend
@@ -28,6 +33,7 @@ app.include_router(deshabilitar_usuario_router)
 app.include_router(habilitar_usuario_router)
 app.include_router(eliminar_usuario_router)
 app.include_router(crear_usuario_router)
+app.include_router(login_router)
 
 @app.get("/")
 def hola():
