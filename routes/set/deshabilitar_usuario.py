@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import TypedDict, Optional
 from database import get_connection
+from auth import get_current_user, TokenUser
 
 router = APIRouter(tags=["usuarios"])
 
@@ -17,7 +18,11 @@ class DeshabilitarUsuario(BaseModel):
     username: str
 
 @router.post("/deshabilitar_usuario", response_model=ApiResponse)
-def deshabilitar_usuario(data: DeshabilitarUsuario) -> ApiResponse:
+def deshabilitar_usuario(data: DeshabilitarUsuario, current_user: TokenUser = Depends(get_current_user)) -> ApiResponse:
+    # Verificar permisos: usuarios con rol 'user' no pueden deshabilitar usuarios
+    if not current_user.get("rol") or current_user.get("rol") == "user":
+        raise HTTPException(status_code=403, detail="No tenés permiso para modificar usuarios")
+
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 

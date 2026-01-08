@@ -29,6 +29,13 @@ def eliminar_usuario(
             detail="No podés eliminar tu propio usuario"
         )
 
+    # Verificar permisos: usuarios con rol 'user' no pueden eliminar usuarios
+    if not current_user.get("rol") or current_user.get("rol") == "user":
+        raise HTTPException(
+            status_code=403,
+            detail="No tenés permiso para eliminar usuarios"
+        )
+
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
